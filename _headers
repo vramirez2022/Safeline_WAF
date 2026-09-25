@@ -1,0 +1,21 @@
+/*
+  # 1. Enforce HTTPS (1 year max-age, include subdomains, preload)
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+  # 2. Prevent XSS, unauthorized scripts, and framing
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';
+
+  # 3. Block Clickjacking via UI redressing
+  X-Frame-Options: DENY
+
+  # 4. Stop MIME-type sniffing / drive-by downloads
+  X-Content-Type-Options: nosniff
+
+  # 5. Protect navigation privacy on outbound links
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # 6. Restrict unnecessary browser APIs and hardware access
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+  # 7. Disable legacy browser XSS auditor (superseded by CSP)
+  X-XSS-Protection: 0
