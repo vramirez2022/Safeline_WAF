@@ -1,6 +1,6 @@
-Enterprise Web Application Firewall (WAF) Deployment & Threat Mitigation Homelab
+# Enterprise Web Application Firewall (WAF) Deployment & Threat Mitigation Homelab
 
-Executive Summary
+# Executive Summary
 
 This project demonstrates the deployment, configuration, and threat testing of SafeLine WAF—an enterprise-grade Web Application Firewall—protecting an intentionally vulnerable OWASP Juice Shop web application.
 
@@ -27,7 +27,7 @@ Architecture & Traffic Flow
 │
 [ Internal Network ] ┘
 
-Network Proxying: SafeLine sits in front of the application layer on port 80, inspecting incoming HTTP requests before reverse-proxying clean traffic upstream to Juice Shop (X.X.X.X.X:3000).
+Network Proxying: SafeLine sits in front of the application layer on port 80, inspecting incoming HTTP requests before reverse-proxying clean traffic upstream to Juice Shop (X.X.X.X:3000).
 
 Session Tracking: SafeLine enforces cookie-based session identification via sl-session headers to monitor visitor behavior and rate limits.
 
@@ -61,7 +61,7 @@ Created a Web Service entry pointing to the local network IP:
 
 Listening Port: 80
 
-Domain / Binding: X.X.X.X
+Domain / Binding: X.X.X.X (or cybersecurity.veronica-ramirez.com)
 
 Upstream Address: http://X.X.X.X:3000
 
@@ -95,7 +95,7 @@ Objective: Attempt file system retrieval outside the web root (/etc/passwd).
 
 Payload:
 
-curl -i "http://X.X.X.X/../../../../etc/passwd"
+curl -i "http://X.X.X./../../../../etc/passwd"
 
 Outcome: Audited / Blocked — Evaluated via path normalization and flagged as an abnormal path traversal attempt.
 
@@ -113,13 +113,10 @@ Artifact 3: SafeLine Protected Site Configuration
 
 Caption: Configuration view displaying the port binding (80) and upstream application target (X.X.X.X:3000).
 
-### 1. Safeline Application
+![alt text](application-3.PNG)
 
-![alt text](application-1.PNG)
+![alt text](safeline_log-1-1.PNG)
 
-### 2. Safeline Event & Attack Logs
-
-![alt text](safeline_log-1.PNG)
 Key Technical Lessons & Insights
 
 Inline vs. Passive Deployment: Learned the crucial difference between passive network monitoring (IDS) and inline reverse proxy blocking (WAF).
