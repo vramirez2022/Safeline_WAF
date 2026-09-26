@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeLine WAF & OWASP Juice Shop Deployment | Veronica Ramirez</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #0d1117;
+      --card-bg: #161b22;
+      --border-color: #30363d;
+      --text-main: #c9d1d9;
+      --text-muted: #8b949e;
+      --heading-color: #f0f6fc;
+      --accent-blue: #58a6ff;
+      --accent-green: #2ea043;
+      --accent-red: #f85149;
+      --code-bg: #010409;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Header Styling */
+    header {
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      color: var(--heading-color);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.025em;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--accent-blue);
+      margin-bottom: 1.5rem;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .tag {
+      background: rgba(88, 166, 255, 0.1);
+      color: var(--accent-blue);
+      border: 1px solid rgba(88, 166, 255, 0.3);
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* Section & Cards Layout */
+    section {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      color: var(--heading-color);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      color: var(--heading-color);
+      margin: 1.25rem 0 0.5rem 0;
+    }
+
+    p {
+      margin-bottom: 1rem;
+    }
+
+    ul {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    /* Architecture Visual */
+    .arch-diagram {
+      width: 100%;
+      background: var(--code-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      text-align: center;
+    }
+
+    /* Code Blocks */
+    pre, code {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9rem;
+    }
+
+    pre {
+      background-color: var(--code-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 0.75rem 0 1.25rem 0;
+    }
+
+    code {
+      color: var(--accent-blue);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+
+    .status-blocked {
+      background-color: rgba(248, 81, 73, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(248, 81, 73, 0.4);
+    }
+
+    /* Figures & Images */
+    figure {
+      margin: 1.5rem 0;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    figcaption {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem 0 1rem 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    footer a {
+      color: var(--accent-blue);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>SafeLine WAF & OWASP Juice Shop Deployment</h1>
+      <p class="subtitle">Self-hosted Web Application Firewall deployment and threat mitigation laboratory.</p>
+      <div class="tags">
+        <span class="tag">SafeLine WAF</span>
+        <span class="tag">OWASP Juice Shop</span>
+        <span class="tag">Docker</span>
+        <span class="tag">Reverse Proxy</span>
+        <span class="tag">Threat Mitigation</span>
+      </div>
+    </header>
+
+    <main>
+      <!-- Overview Section -->
+      <section>
+        <h2>Project Overview</h2>
+        <p>
+          This project demonstrates the deployment, configuration, and threat testing of <strong>SafeLine WAF</strong>—an enterprise-grade Web Application Firewall—protecting an intentionally vulnerable <strong>OWASP Juice Shop</strong> application.
+        </p>
+        <p>
+          The primary objective of this homelab was to construct an inline reverse proxy defense architecture, execute real-world web application attack vectors (SQL Injection, Cross-Site Scripting, Path Traversal), and validate real-time threat detection, automated blocking, and security telemetry logging.
+        </p>
+
+        <h3>Architecture & Traffic Flow</h3>
+        <div class="arch-diagram">
+          <svg viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto;">
+            <!-- Connector Lines -->
+            <line x1="160" y1="65" x2="250" y2="65" stroke="#30363d" stroke-width="2" marker-end="url(#arrow)"/>
+            <line x1="450" y1="65" x2="540" y2="65" stroke="#30363d" stroke-width="2" marker-end="url(#arrow)"/>
+            
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#58a6ff"/>
+              </marker>
+            </defs>
+
+            <!-- Box 1: Client -->
+            <rect x="10" y="25" width="150" height="80" rx="6" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+            <text x="85" y="60" fill="#f0f6fc" font-family="sans-serif" font-size="13" font-weight="bold" text-anchor="middle">Attacker / Client</text>
+            <text x="85" y="80" fill="#8b949e" font-family="sans-serif" font-size="11" text-anchor="middle">Browser / curl</text>
+
+            <!-- Box 2: SafeLine WAF -->
+            <rect x="250" y="20" width="200" height="90" rx="6" fill="#010409" stroke="#58a6ff" stroke-width="2"/>
+            <text x="350" y="55" fill="#58a6ff" font-family="sans-serif" font-size="14" font-weight="bold" text-anchor="middle">SafeLine WAF</text>
+            <text x="350" y="75" fill="#8b949e" font-family="sans-serif" font-size="11" text-anchor="middle">Inline Proxy (Ports 80 / 9443)</text>
+
+            <!-- Box 3: Target App -->
+            <rect x="540" y="25" width="150" height="80" rx="6" fill="#161b22" stroke="#2ea043" stroke-width="2"/>
+            <text x="615" y="60" fill="#f0f6fc" font-family="sans-serif" font-size="13" font-weight="bold" text-anchor="middle">OWASP Juice Shop</text>
+            <text x="615" y="80" fill="#8b949e" font-family="sans-serif" font-size="11" text-anchor="middle">Backend (Port 3000)</text>
+          </svg>
+        </div>
+
+        <h3>Technical Specifications & Key Controls</h3>
+        <ul>
+          <li><strong>Network Proxying:</strong> SafeLine listens on port <code>80</code>, inspecting incoming HTTP requests before forwarding clean traffic upstream to Juice Shop (<code>X.X.X.X:3000</code>).</li>
+          <li><strong>Session Tracking:</strong> Utilizes cookie-based session identification via <code>sl-session</code> headers to monitor visitor behavior and rate limits.</li>
+          <li><strong>Inline Enforcement:</strong> Operating in active <em>Blocking Mode</em> to break malicious HTTP connections before reaching backend code.</li>
+          <li><strong>Key Infrastructure:</strong> Ubuntu Linux VM, Docker Engine, URL Encoding Utilities, Header Inspection Tools.</li>
+        </ul>
+      </section>
+
+      <!-- Deployment Steps Section -->
+      <section>
+        <h2>Deployment & Configuration Steps</h2>
+        
+        <h3>1. Target Application Setup</h3>
+        <p>Deployed the OWASP Juice Shop vulnerable target container locally bound to internal port 3000:</p>
+        <pre><code>docker run -d --name juiceshop -p 3000:3000 bkimminich/juice-shop</code></pre>
+
+        <h3>2. WAF Gateway Installation & Binding</h3>
+        <p>Deployed SafeLine WAF containers and initialized the web administration console on port <code>9443</code>. Configured the primary entry pipeline:</p>
+        <ul>
+          <li><strong>Listening Port:</strong> <code>80</code></li>
+          <li><strong>Domain / Binding:</strong> <code>cybersecurity.veronica-ramirez.com</code> (or <code>X.X.X.X</code>)</li>
+          <li><strong>Upstream Address:</strong> <code>http://X.X.X.X:3000</code></li>
+        </ul>
+      </section>
+
+      <!-- Attack Execution Section -->
+      <section>
+        <h2>Attack Execution & Threat Mitigation Results</h2>
+        <p>To validate rule engine effectiveness, multiple OWASP Top 10 attack payloads were transmitted against the protected proxy interface.</p>
+
+        <h3>1. SQL Injection (SQLi) — OWASP A03:2021</h3>
+        <p><strong>Objective:</strong> Attempt parameter manipulation to bypass authentication or extract raw data.</p>
+        <pre><code>curl -i "http://X.X.X.X/?id=1%27%20OR%20%271%27=%271"</code></pre>
+        <p><strong>Outcome:</strong> <span class="status-badge status-blocked">403 FORBIDDEN</span> — SafeLine identified malicious SQL syntax (<code>OR '1'='1'</code>) and dropped the connection immediately.</p>
+
+        <h3>2. Reflected Cross-Site Scripting (XSS) — OWASP A03:2021</h3>
+        <p><strong>Objective:</strong> Inject executable JavaScript payload into search HTTP parameters.</p>
+        <pre><code>curl -i "http://X.X.X.X/?search=%3Cscript%3Ealert(1)%3C/script%3E"</code></pre>
+        <p><strong>Outcome:</strong> <span class="status-badge status-blocked">403 FORBIDDEN</span> — Intercepted by WAF signature inspection prior to rendering.</p>
+
+        <h3>3. Path Traversal / Directory Traversal — OWASP A01:2021</h3>
+        <p><strong>Objective:</strong> Read sensitive application/system files outside the web root (e.g., <code>/etc/passwd</code>).</p>
+        <pre><code>curl -i "http://X.X.X.X/../../../../etc/passwd"</code></pre>
+        <p><strong>Outcome:</strong> <span class="status-badge status-blocked">AUDITED / BLOCKED</span> — Identified via URL path normalization filters and terminated.</p>
+      </section>
+
+      <!-- Artifacts & Evidence -->
+      <section>
+        <h2>Evidence & Verification Artifacts</h2>
+        
+        <figure>
+          <img src="assets/application.png" alt="SafeLine Protected Site Configuration">
+          <figcaption>Artifact 1: SafeLine site configuration exhibiting active port 80 binding pointing to upstream target on port 3000.</figcaption>
+        </figure>
+
+        <figure>
+          <img src="assets/Attacks_log.png" alt="SafeLine Threat Telemetry Dashboard">
+          <figcaption>Artifact 2: Real-time attack telemetry dashboard demonstrating logged and blocked SQLi, XSS, and Traversal attempts.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Lessons Learned -->
+      <section>
+        <h2>Key Technical Lessons & Insights</h2>
+        <ul>
+          <li><strong>Inline vs. Passive Deployment:</strong> Realized the functional operational differences between passive network monitoring (IDS) versus active inline proxy mitigation (WAF).</li>
+          <li><strong>URL Path Normalization:</strong> Learned how reverse proxies normalize relative directory traversal syntax (<code>../</code>) before evaluation by internal rule sets or forwarding to upstream endpoints.</li>
+          <li><strong>Incident Analysis:</strong> Refined hands-on telemetry skills inspecting source IP indicators, header attributes, and matching rule signature IDs.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p><strong>Author:</strong> Veronica Ramirez — Security Engineer & Cybersecurity Professional</p>
+      <p>Website: <a href="https://cybersecurity.veronica-ramirez.com" target="_blank" rel="noopener">cybersecurity.veronica-ramirez.com</a></p>
+    </footer>
+  </div>
+
+</body>
+</html>
